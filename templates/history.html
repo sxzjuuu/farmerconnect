@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Price History & Trends — FarmerConnect{% endblock %}
+{% block page_heading %}Mandi Price History & Trends{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Agricultural Price Trend Analysis</h2>
+    <p class="page-description">
+      Track verified historical mandi prices over time across Tamil Nadu APMCs to identify price patterns, seasonality, and optimal marketing windows.
+    </p>
+  </div>
+</div>
+
+<!-- Crop and Market Selection Bar -->
+<div class="filter-bar" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+  <div>
+    <label class="form-label" for="historyCropSelect">Select Crop / Commodity:</label>
+    <select class="form-control" id="historyCropSelect">
+      <option value="">Loading crops...</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="form-label" for="historyMarketSelect">Select Mandi Market:</label>
+    <select class="form-control" id="historyMarketSelect">
+      <option value="all">All Available Mandis</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="form-label" for="historyLimitSelect">Observation Window:</label>
+    <select class="form-control" id="historyLimitSelect">
+      <option value="15">Last 15 Observations</option>
+      <option value="30" selected>Last 30 Observations</option>
+      <option value="60">Last 60 Observations</option>
+    </select>
+  </div>
+
+  <div style="display: flex; align-items: flex-end;">
+    <button type="button" class="btn btn-primary" id="btnLoadHistory" style="width: 100%;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      Load Trends
+    </button>
+  </div>
+</div>
+
+<!-- Trend Metrics Summary Cards -->
+<div class="metrics-grid" id="historySummaryGrid">
+  <div class="metric-card">
+    <div class="metric-icon green">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20"/>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+      </svg>
+    </div>
+    <div class="metric-content">
+      <div class="metric-label">Latest Price</div>
+      <div class="metric-value" id="histLatestPrice">₹--</div>
+      <div class="metric-sub" id="histLatestDate">As of: --</div>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-icon blue">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M8 12h8"/>
+      </svg>
+    </div>
+    <div class="metric-content">
+      <div class="metric-label">Average Modal Price</div>
+      <div class="metric-value" id="histAvgPrice">₹--</div>
+      <div class="metric-sub">Over observation window</div>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-icon amber" id="histTrendIcon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+        <polyline points="17 6 23 6 23 12"/>
+      </svg>
+    </div>
+    <div class="metric-content">
+      <div class="metric-label">Price Movement</div>
+      <div class="metric-value" id="histTrendPct">--%</div>
+      <div class="metric-sub" id="histTrendDiff">₹-- net shift</div>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-icon green">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m19 12-7-7-7 7"/>
+        <path d="M12 19V5"/>
+      </svg>
+    </div>
+    <div class="metric-content">
+      <div class="metric-label">Range (Min - Max)</div>
+      <div class="metric-value" style="font-size: 1.15rem;" id="histMinMaxRange">₹-- to ₹--</div>
+      <div class="metric-sub" id="histDataPoints">0 recorded points</div>
+    </div>
+  </div>
+</div>
+
+<!-- Interactive SVG Trend Chart Card -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/>
+        <path d="m19 9-5 5-4-4-3 3"/>
+      </svg>
+      Modal Price Trend: <span id="chartCropHeader" style="color: var(--primary-600); margin-left: 0.35rem;">Tomato</span>
+    </h3>
+    <span class="status-badge demo" id="histSourceBadge">🔶 DEMONSTRATION DATA</span>
+  </div>
+
+  <!-- SVG Chart Container with hover tooltip -->
+  <div class="chart-container" id="chartWrapper">
+    <svg class="svg-chart" id="historySvgChart" viewBox="0 0 900 320" preserveAspectRatio="none">
+      <!-- Grid, axes, and line drawn via JS -->
+    </svg>
+    <div class="chart-tooltip" id="chartTooltip"></div>
+  </div>
+
+  <div style="font-size: 0.775rem; color: var(--text-light); text-align: right; margin-top: 0.5rem;">
+    * Hover over points on the curve to inspect exact date and modal mandi price.
+  </div>
+</div>
+
+<!-- Stored Observations Data Table -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+        <line x1="16" x2="16" y1="2" y2="6"/>
+        <line x1="8" x2="8" y1="2" y2="6"/>
+        <line x1="3" x2="21" y1="10" y2="10"/>
+      </svg>
+      Historical Observation Log
+    </h3>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Recorded Date</th>
+          <th>Crop / Commodity</th>
+          <th>Mandi Market</th>
+          <th>Min Price (₹)</th>
+          <th>Max Price (₹)</th>
+          <th>Modal Price (₹)</th>
+          <th>Unit</th>
+          <th>Data Source</th>
+        </tr>
+      </thead>
+      <tbody id="historyTableBody">
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 2rem;">
+            Loading observations...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}

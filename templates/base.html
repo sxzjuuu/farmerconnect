@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}FarmerConnect — Smart Agricultural Market Price and Weather Information System{% endblock %}</title>
+  <meta name="description" content="FarmerConnect helps farmers across Tamil Nadu access real-time weather forecasts, APMC agricultural market prices, and compare prices to make profitable selling decisions.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="app-container">
+    <!-- Desktop & Mobile Sidebar Navigation -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <a href="/" class="brand-wrapper">
+          <div class="brand-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-name">FarmerConnect</div>
+            <div class="brand-tagline">Tamil Nadu Mandi & Weather</div>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main Navigation</div>
+
+        <a href="/" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}" id="navDashboard">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="7" height="9" x="3" y="3" rx="1"/>
+              <rect width="7" height="5" x="14" y="3" rx="1"/>
+              <rect width="7" height="9" x="14" y="12" rx="1"/>
+              <rect width="7" height="5" x="3" y="16" rx="1"/>
+            </svg>
+          </span>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="/weather" class="nav-item {% if active_page == 'weather' %}active{% endif %}" id="navWeather">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+            </svg>
+          </span>
+          <span>Live Weather</span>
+        </a>
+
+        <a href="/markets" class="nav-item {% if active_page == 'markets' %}active{% endif %}" id="navMarkets">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"/>
+              <path d="m19 9-5 5-4-4-3 3"/>
+            </svg>
+          </span>
+          <span>Market Prices</span>
+        </a>
+
+        <a href="/compare" class="nav-item {% if active_page == 'compare' %}active{% endif %}" id="navCompare">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+              <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/>
+              <path d="M7 21h10"/>
+              <path d="M12 3v18"/>
+              <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>
+            </svg>
+          </span>
+          <span>Compare Mandis</span>
+        </a>
+
+        <a href="/history" class="nav-item {% if active_page == 'history' %}active{% endif %}" id="navHistory">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </span>
+          <span>Price History</span>
+        </a>
+
+        <div class="nav-section-label" style="margin-top: 1rem;">Project Info</div>
+
+        <a href="/about" class="nav-item {% if active_page == 'about' %}active{% endif %}" id="navAbout">
+          <span class="nav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4"/>
+              <path d="M12 8h.01"/>
+            </svg>
+          </span>
+          <span>About & Documentation</span>
+        </a>
+      </nav>
+
+      <!-- Active Location Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div class="active-loc-card">
+          <div class="loc-info">
+            <h4 id="sidebarLocName">{{ default_location.location_name }}</h4>
+            <p id="sidebarLocSub">{{ default_location.state }}</p>
+          </div>
+          <button type="button" class="btn-change-loc" id="btnOpenLocModal" title="Change Location">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="app-main">
+      <!-- Sticky Top Navbar -->
+      <header class="top-navbar">
+        <div class="top-nav-left">
+          <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" x2="20" y1="12" y2="12"/>
+              <line x1="4" x2="20" y1="6" y2="6"/>
+              <line x1="4" x2="20" y1="18" y2="18"/>
+            </svg>
+          </button>
+          <h1 class="top-page-title">
+            {% block page_heading %}Agricultural Dashboard{% endblock %}
+          </h1>
+        </div>
+
+        <div class="top-nav-right">
+          <!-- Live vs Demo Mode Pill -->
+          <div class="status-badge {% if provider_status.is_configured %}live{% else %}demo{% endif %}" id="globalProviderBadge" title="{{ provider_status.message }}">
+            <span class="pulse-dot"></span>
+            <span id="globalProviderLabel">
+              {% if provider_status.is_configured %}
+                LIVE GOVERNMENT DATA
+              {% else %}
+                DEMONSTRATION DATA (Sample)
+              {% endif %}
+            </span>
+          </div>
+
+          <!-- Quick Location Button -->
+          <button type="button" class="btn btn-outline btn-sm" id="btnTopLocSwitcher">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span id="topLocLabel">{{ default_location.location_name }}</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Body Container -->
+      <main class="page-content">
+        {% block content %}{% endblock %}
+      </main>
+
+      <!-- Global Footer -->
+      <footer class="app-footer">
+        <div class="footer-links">
+          <a href="/">Dashboard</a>
+          <a href="/weather">Weather</a>
+          <a href="/markets">Market Prices</a>
+          <a href="/compare">Compare</a>
+          <a href="/history">History</a>
+          <a href="/about">About System</a>
+        </div>
+        <p><strong>FarmerConnect</strong> — Smart Agricultural Market Price and Weather Information System.</p>
+        <p style="margin-top: 0.35rem; font-size: 0.8rem; color: var(--text-light);">
+          Data Sources: <strong>Open-Meteo Weather API</strong> (Live Forecast) & <strong>data.gov.in / Agmarknet</strong> (Daily Mandi Prices).
+          Designed for farmers in Tamil Nadu, India. Default Mandi Hub: Coimbatore.
+        </p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Location Switcher Modal -->
+  <div class="modal-backdrop" id="locationModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Select Agricultural Location</h3>
+        <button type="button" class="modal-close-btn" id="btnCloseLocModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="locSearchInput">Search City or Mandi in Tamil Nadu:</label>
+          <input type="text" class="form-control" id="locSearchInput" placeholder="Type city (e.g. Coimbatore, Tiruppur, Erode, Salem)..." autocomplete="off">
+        </div>
+
+        <div style="margin-bottom: 0.75rem; font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">
+          Major Tamil Nadu Agricultural Hubs:
+        </div>
+        <div id="locationListContainer">
+          <!-- Dynamically populated or default hubs -->
+          <button type="button" class="location-item-btn" data-name="Coimbatore" data-lat="11.0055" data-lon="76.9661" data-district="Coimbatore">
+            <strong>Coimbatore</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Coimbatore APMC Mandi</span>
+          </button>
+          <button type="button" class="location-item-btn" data-name="Tiruppur" data-lat="11.1085" data-lon="77.3411" data-district="Tiruppur">
+            <strong>Tiruppur</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Cotton & Small Onion Mandi</span>
+          </button>
+          <button type="button" class="location-item-btn" data-name="Erode" data-lat="11.3410" data-lon="77.7172" data-district="Erode">
+            <strong>Erode</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Turmeric & Perundurai Mandi</span>
+          </button>
+          <button type="button" class="location-item-btn" data-name="Salem" data-lat="11.6643" data-lon="78.1460" data-district="Salem">
+            <strong>Salem</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Attur Sago & Veg Mandi</span>
+          </button>
+          <button type="button" class="location-item-btn" data-name="Oddanchatram" data-lat="10.4854" data-lon="77.7479" data-district="Dindigul">
+            <strong>Oddanchatram</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Vegetable Wholesale Mandi</span>
+          </button>
+          <button type="button" class="location-item-btn" data-name="Pollachi" data-lat="10.6609" data-lon="77.0048" data-district="Coimbatore">
+            <strong>Pollachi</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Coconut & Coir Mandi</span>
+          </button>
+          <button type="button" class="location-item-btn" data-name="Thanjavur" data-lat="10.7870" data-lon="79.1378" data-district="Thanjavur">
+            <strong>Thanjavur</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Cauvery Delta Paddy Mandi</span>
+          </button>
+          <button type="button" class="location-item-btn" data-name="Chennai" data-lat="13.0827" data-lon="80.2707" data-district="Chennai">
+            <strong>Chennai</strong>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Koyambedu Wholesale Terminal</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- App Global JavaScript -->
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

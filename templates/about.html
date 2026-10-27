@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}About FarmerConnect — College Mini Project Documentation{% endblock %}
+{% block page_heading %}About FarmerConnect{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Project Overview & Academic Documentation</h2>
+    <p class="page-description">
+      College Mini Project: FarmerConnect — Smart Agricultural Market Price and Weather Information System.
+    </p>
+  </div>
+</div>
+
+<!-- Project Abstract Card -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+      Abstract
+    </h3>
+    <span class="status-badge live">Final Year / Mini Project</span>
+  </div>
+  <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
+    Agriculture forms the backbone of Tamil Nadu's rural economy, yet smallholder farmers regularly face severe market price volatility, information asymmetry, and unforeseen weather disruptions. Intermediaries and commission agents often exploit the lack of timely, accurate mandi price data, while unseasonal rainfall damages harvested produce during transit or outdoor drying.
+  </p>
+  <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main); margin-top: 0.75rem;">
+    <strong>FarmerConnect</strong> bridges this information gap by providing a unified web platform that integrates real-time hyper-local meteorological forecasting from Open-Meteo with daily agricultural commodity market prices from India's official <em>data.gov.in (Agmarknet)</em> repository. With built-in market comparison tools, transport cost calculators, and historical price trend tracking, the platform empowers farmers across Tamil Nadu to choose the most profitable marketing destination and time field operations effectively.
+  </p>
+</div>
+
+<!-- System Architecture & Key Modules -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+        <line x1="3" x2="21" y1="9" y2="9"/>
+        <line x1="9" x2="9" y1="21" y2="9"/>
+      </svg>
+      System Architecture & Modules
+    </h3>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 0.5rem;">
+    <div style="background: var(--bg-surface-alt); padding: 1.25rem; border-radius: var(--radius-md); border-left: 4px solid var(--primary-600);">
+      <h4 style="color: var(--primary-900); font-size: 1rem; margin-bottom: 0.4rem;">1. Live Weather & Advisory Service</h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+        Communicates with the Open-Meteo REST API. Extracts temperature, precipitation probability, humidity, and wind speed. Translates WMO weather codes into practical Tamil Nadu agricultural advice (spraying suitability, irrigation adjustment, harvest protection).
+      </p>
+    </div>
+
+    <div style="background: var(--bg-surface-alt); padding: 1.25rem; border-radius: var(--radius-md); border-left: 4px solid var(--accent-amber);">
+      <h4 style="color: var(--primary-900); font-size: 1rem; margin-bottom: 0.4rem;">2. Mandi Price Service & Provider Abstraction</h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+        Implements an extensible <code>BaseMarketProvider</code> pattern. Connects to <code>data.gov.in</code> when API credentials are provided; falls back gracefully to a robust SQLite database seeded with authentic Tamil Nadu demonstration data. Explicitly flags all records as LIVE or DEMO.
+      </p>
+    </div>
+
+    <div style="background: var(--bg-surface-alt); padding: 1.25rem; border-radius: var(--radius-md); border-left: 4px solid var(--status-info);">
+      <h4 style="color: var(--primary-900); font-size: 1rem; margin-bottom: 0.4rem;">3. Market Comparison & Net Realization Engine</h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+        Aggregates price spreads across APMC mandis for a given commodity. Factors in realistic logistical considerations (freight cost per km, vehicle capacities, market fees) so farmers do not mistakenly assume the highest gross price mandi is the most profitable.
+      </p>
+    </div>
+
+    <div style="background: var(--bg-surface-alt); padding: 1.25rem; border-radius: var(--radius-md); border-left: 4px solid var(--primary-400);">
+      <h4 style="color: var(--primary-900); font-size: 1rem; margin-bottom: 0.4rem;">4. Price History & Trend Visualization</h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+        Stores daily observations over time. Generates an interactive, zero-dependency SVG line chart with date axes, price thresholds, and responsive hover tooltips for seasonal price trend tracking.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Technology Stack & Engineering Decisions -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20"/>
+        <path d="m17 5-5-3-5 3v6l5 3 5-3V5Z"/>
+      </svg>
+      Technology Stack
+    </h3>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+    <div>
+      <strong style="color: var(--primary-900);">Backend:</strong>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Python 3, Flask, Requests, Pytest, Python-dotenv</p>
+    </div>
+    <div>
+      <strong style="color: var(--primary-900);">Database:</strong>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">SQLite3, Parameterized Queries, Indexing, Transactions</p>
+    </div>
+    <div>
+      <strong style="color: var(--primary-900);">Frontend:</strong>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Semantic HTML5, CSS3 Custom Properties, Vanilla ES6+ JS, SVG Charts</p>
+    </div>
+    <div>
+      <strong style="color: var(--primary-900);">External APIs:</strong>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Open-Meteo Weather API & Geocoding, data.gov.in (Agmarknet)</p>
+    </div>
+  </div>
+</div>
+
+<!-- College Viva Questions & Answers -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <line x1="12" x2="12.01" y1="17" y2="17"/>
+      </svg>
+      Academic Viva Questions & Answers
+    </h3>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+    <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
+      <h4 style="font-size: 0.95rem; color: var(--primary-900); font-weight: 700;">
+        Q1: Why was SQLite selected instead of MongoDB or MySQL for this project?
+      </h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+        <strong>Ans:</strong> SQLite is an embedded, zero-configuration SQL engine built into the Python standard library. It requires no external server process or administrator setup, runs effortlessly on any student or examiner Windows PC, provides ACID transactions, and handles indexed queries for thousands of agricultural records with sub-millisecond response times.
+      </p>
+    </div>
+
+    <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
+      <h4 style="font-size: 0.95rem; color: var(--primary-900); font-weight: 700;">
+        Q2: How does the system handle external government API downtime or missing credentials?
+      </h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+        <strong>Ans:</strong> The application uses the Provider Abstraction Pattern (<code>BaseMarketProvider</code>). If <code>DATA_GOV_IN_API_KEY</code> is missing, invalid, or experiencing rate limits, the system does not crash or display dead screens; instead, it serves realistic Tamil Nadu market data from the local database, prominently labeling every sample record as <em>DEMONSTRATION DATA</em> to maintain academic and operational honesty.
+      </p>
+    </div>
+
+    <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
+      <h4 style="font-size: 0.95rem; color: var(--primary-900); font-weight: 700;">
+        Q3: Why shouldn't a farmer automatically choose the mandi with the highest price?
+      </h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+        <strong>Ans:</strong> High mandi prices are often located in distant wholesale terminals (e.g. Koyambedu in Chennai). If freight charges (₹20/km), toll fees, and transit losses exceed the price difference per quintal, the farmer will experience a net financial loss. FarmerConnect includes an interactive Net Realization Calculator to verify net profitability before dispatch.
+      </p>
+    </div>
+
+    <div>
+      <h4 style="font-size: 0.95rem; color: var(--primary-900); font-weight: 700;">
+        Q4: How does the system prevent SQL injection and cross-site scripting?
+      </h4>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+        <strong>Ans:</strong> All database operations strictly use parameterized SQL statements (e.g. <code>cursor.execute("... WHERE crop_name = ?", (crop,))</code>) preventing SQL injection. Jinja2 templates auto-escape rendered output, and frontend JavaScript DOM manipulation uses <code>textContent</code> rather than unsafe raw HTML injection.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

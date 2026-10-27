@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — FarmerConnect Smart Agri Market & Weather{% endblock %}
+{% block page_heading %}Farmer Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Welcome to FarmerConnect</h2>
+    <p class="page-description">
+      Live weather updates and real-time mandi prices for farmers across Tamil Nadu. Selected Mandi: <strong id="dashCurrentLocText">Coimbatore</strong>.
+    </p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <button type="button" class="btn btn-outline btn-sm" id="btnRefreshDashboard">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+        <path d="M16 16h5v5"/>
+      </svg>
+      Refresh Data
+    </button>
+    <a href="/markets" class="btn btn-primary btn-sm">Browse All Mandis</a>
+  </div>
+</div>
+
+<!-- Weather Hero Banner -->
+<div class="weather-hero-card" id="dashWeatherCard">
+  <div class="weather-hero-content">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+        <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary-300);">
+          Live Agricultural Weather Forecast
+        </span>
+        <span style="font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 0.15rem 0.5rem; border-radius: 9999px;" id="dashWeatherTimestamp">
+          Fetching...
+        </span>
+      </div>
+      <div class="weather-hero-temp" id="dashWeatherTemp">
+        -- <span class="unit">°C</span>
+      </div>
+      <div style="font-size: 1.15rem; font-weight: 600; margin-top: 0.35rem;" id="dashWeatherCondition">
+        Loading local weather...
+      </div>
+      <div style="font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 0.25rem;" id="dashWeatherLocTitle">
+        Station: Coimbatore, Tamil Nadu
+      </div>
+    </div>
+
+    <div style="text-align: right;">
+      <div style="font-size: 3.5rem;" id="dashWeatherIcon">🌤️</div>
+      <a href="/weather" style="color: #ffffff; text-decoration: underline; font-size: 0.85rem; font-weight: 600;">
+        View 5-Day Detailed Forecast &rarr;
+      </a>
+    </div>
+  </div>
+
+  <div class="weather-details-grid">
+    <div class="weather-detail-item">
+      <span class="label">Relative Humidity</span>
+      <span class="value" id="dashHumidity">--%</span>
+    </div>
+    <div class="weather-detail-item">
+      <span class="label">Wind Speed</span>
+      <span class="value" id="dashWind">-- km/h</span>
+    </div>
+    <div class="weather-detail-item">
+      <span class="label">Precipitation</span>
+      <span class="value" id="dashPrecip">-- mm</span>
+    </div>
+    <div class="weather-detail-item">
+      <span class="label">Feels Like</span>
+      <span class="value" id="dashFeelsLike">-- °C</span>
+    </div>
+  </div>
+</div>
+
+<!-- Agricultural Farming Advisory Box -->
+<div class="advisory-box" id="dashAdvisoryBox">
+  <div style="font-size: 1.5rem; line-height: 1;">🌾</div>
+  <div class="advisory-content">
+    <h4 id="dashAdvisoryTitle">Agricultural Field Advisory</h4>
+    <p id="dashAdvisoryText">Loading farming and spraying guidance based on current atmospheric conditions...</p>
+  </div>
+</div>
+
+<!-- Key Performance Metrics Grid -->
+<div class="metrics-grid">
+  <div class="metric-card">
+    <div class="metric-icon green">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+      </svg>
+    </div>
+    <div class="metric-content">
+      <div class="metric-label">Tracked Crops</div>
+      <div class="metric-value" id="dashMetricCrops">12+</div>
+      <div class="metric-sub">Tomato, Onion, Paddy, Coconut, Turmeric</div>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-icon amber">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/>
+        <path d="m19 9-5 5-4-4-3 3"/>
+      </svg>
+    </div>
+    <div class="metric-content">
+      <div class="metric-label">Active APMC Mandis</div>
+      <div class="metric-value" id="dashMetricMandis">10+</div>
+      <div class="metric-sub">Coimbatore, Oddanchatram, Erode, Chennai</div>
+    </div>
+  </div>
+
+  <div class="metric-card">
+    <div class="metric-icon blue">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20"/>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+      </svg>
+    </div>
+    <div class="metric-content">
+      <div class="metric-label">Top Commodity Price</div>
+      <div class="metric-value" id="dashMetricTopPrice">₹15,100</div>
+      <div class="metric-sub">Turmeric (Erode APMC Market)</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5-Day Forecast Mini Strip -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2"/>
+        <path d="M12 20v2"/>
+        <path d="m4.93 4.93 1.41 1.41"/>
+        <path d="m17.66 17.66 1.41 1.41"/>
+        <path d="M2 12h2"/>
+        <path d="M20 12h2"/>
+        <path d="m6.34 17.66-1.41 1.41"/>
+        <path d="m19.07 4.93-1.41 1.41"/>
+      </svg>
+      5-Day Agricultural Weather Outlook
+    </h3>
+    <a href="/weather" class="btn btn-outline btn-sm">Detailed Weather &rarr;</a>
+  </div>
+  <div class="forecast-grid" id="dashForecastGrid">
+    <!-- Populated by JS -->
+    <div class="forecast-card"><div class="skeleton skeleton-rect"></div></div>
+    <div class="forecast-card"><div class="skeleton skeleton-rect"></div></div>
+    <div class="forecast-card"><div class="skeleton skeleton-rect"></div></div>
+    <div class="forecast-card"><div class="skeleton skeleton-rect"></div></div>
+    <div class="forecast-card"><div class="skeleton skeleton-rect"></div></div>
+  </div>
+</div>
+
+<!-- Featured Agricultural Mandi Prices Table -->
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+        <path d="M3 6h18"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      Today's Mandi Market Prices (Tamil Nadu)
+    </h3>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <a href="/compare" class="btn btn-outline btn-sm">Compare Mandis</a>
+      <a href="/markets" class="btn btn-primary btn-sm">Full Table &rarr;</a>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+    <input type="text" class="form-control" id="dashCropSearch" placeholder="Quick search crop (e.g. Tomato, Onion, Paddy)..." style="max-width: 320px;">
+    <select class="form-control" id="dashDistrictFilter" style="max-width: 220px;">
+      <option value="all">All Tamil Nadu Districts</option>
+      <option value="Coimbatore">Coimbatore</option>
+      <option value="Tiruppur">Tiruppur</option>
+      <option value="Erode">Erode</option>
+      <option value="Salem">Salem</option>
+      <option value="Dindigul">Dindigul</option>
+      <option value="Chennai">Chennai</option>
+      <option value="Thanjavur">Thanjavur</option>
+      <option value="Madurai">Madurai</option>
+    </select>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Crop / Commodity</th>
+          <th>Variety</th>
+          <th>Mandi Market</th>
+          <th>District</th>
+          <th>Min Price</th>
+          <th>Max Price</th>
+          <th>Modal Price</th>
+          <th>Reported Date</th>
+          <th>Data Source</th>
+        </tr>
+      </thead>
+      <tbody id="dashMarketTableBody">
+        <tr>
+          <td colspan="9" style="text-align: center; padding: 2rem;">
+            <div class="skeleton skeleton-text" style="width: 60%; margin: 0 auto 0.5rem;"></div>
+            <div class="skeleton skeleton-text" style="width: 40%; margin: 0 auto;"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Dashboard data loading
+    FarmerApp.initDashboard();
+  });
+</script>
+{% endblock %}

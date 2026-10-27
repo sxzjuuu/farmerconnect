@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Agricultural Market Prices — FarmerConnect{% endblock %}
+{% block page_heading %}Mandi Market Prices{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2 class="page-title">Agricultural Mandi Market Prices</h2>
+    <p class="page-description">
+      Browse and filter daily reported agricultural commodity prices across Agricultural Produce Market Committees (APMCs) in Tamil Nadu.
+    </p>
+  </div>
+  <div style="display: flex; gap: 0.75rem;">
+    <button type="button" class="btn btn-outline btn-sm" id="btnRefreshMarkets">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+        <path d="M16 16h5v5"/>
+      </svg>
+      Refresh Prices
+    </button>
+    <a href="/compare" class="btn btn-primary btn-sm">Compare Mandis</a>
+  </div>
+</div>
+
+<!-- Transparent Data Source Status Banner -->
+<div class="card" id="marketSourceBanner" style="border-left: 4px solid var(--accent-amber); padding: 1rem 1.25rem;">
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: gap; gap: 1rem;">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span style="font-size: 1.5rem;" id="marketSourceIcon">🔶</span>
+      <div>
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary-900);" id="marketSourceTitle">
+          Demonstration Dataset Mode
+        </h4>
+        <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.15rem;" id="marketSourceSubtitle">
+          Displaying verified Tamil Nadu agricultural sample records. All sample data is explicitly labeled DEMO.
+        </p>
+      </div>
+    </div>
+    <div>
+      <span class="status-badge demo" id="marketSourceBadge">🔶 DEMONSTRATION DATA</span>
+    </div>
+  </div>
+</div>
+
+<!-- Search, Filter & Sort Controls -->
+<div class="filter-bar">
+  <div>
+    <label class="form-label" for="filterCrop">Search Crop / Commodity:</label>
+    <input type="text" class="form-control" id="filterCrop" placeholder="Type crop (e.g. Tomato, Onion)...">
+  </div>
+
+  <div>
+    <label class="form-label" for="filterDistrict">Filter by District:</label>
+    <select class="form-control" id="filterDistrict">
+      <option value="all">All Tamil Nadu Districts</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="form-label" for="filterMarket">Filter by Mandi:</label>
+    <select class="form-control" id="filterMarket">
+      <option value="all">All Mandis</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="form-label" for="filterSort">Sort By:</label>
+    <select class="form-control" id="filterSort">
+      <option value="date_desc">Latest Reported Date</option>
+      <option value="price_desc">Modal Price: High to Low</option>
+      <option value="price_asc">Modal Price: Low to High</option>
+      <option value="crop_asc">Crop Name (A to Z)</option>
+    </select>
+  </div>
+
+  <div>
+    <label class="form-label" for="filterSource">Data Source:</label>
+    <select class="form-control" id="filterSource">
+      <option value="all">All Sources</option>
+      <option value="LIVE">Live Government Data Only</option>
+      <option value="DEMO">Demo Sample Records Only</option>
+    </select>
+  </div>
+</div>
+
+<!-- Main Market Price Table -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Crop / Commodity</th>
+          <th>Variety</th>
+          <th>Mandi Market</th>
+          <th>District</th>
+          <th>Min Price</th>
+          <th>Max Price</th>
+          <th>Modal Price</th>
+          <th>Arrival Date</th>
+          <th>Source Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="marketTableBody">
+        <tr>
+          <td colspan="10" style="text-align: center; padding: 2.5rem;">
+            <div class="skeleton skeleton-text" style="width: 50%; margin: 0 auto 0.5rem;"></div>
+            <div class="skeleton skeleton-text" style="width: 30%; margin: 0 auto;"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Pagination Controls -->
+<div class="pagination-wrapper">
+  <div class="pagination-info" id="paginationInfo">
+    Showing page 1 of 1 (0 total records)
+  </div>
+
+  <div class="pagination-controls">
+    <button type="button" class="btn btn-outline btn-sm" id="btnPrevPage" disabled>
+      &larr; Previous
+    </button>
+    <span style="font-size: 0.85rem; font-weight: 600; padding: 0.4rem 0.75rem;" id="pageIndicator">
+      Page 1
+    </span>
+    <button type="button" class="btn btn-outline btn-sm" id="btnNextPage" disabled>
+      Next &rarr;
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/markets.js') }}"></script>
+{% endblock %}
